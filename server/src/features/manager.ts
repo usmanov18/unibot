@@ -23,6 +23,14 @@ export class FeatureManager {
     return this.handlers.get(key);
   }
 
+  getFeature(key: string) {
+    return this.handlers.get(key);
+  }
+
+  getFeatures() {
+    return Array.from(this.handlers.values());
+  }
+
   async handleInput(ctx: Context): Promise<boolean> {
     const session = (ctx as any).session as SessionData | undefined;
     if (!session?.currentFeature) return false;
