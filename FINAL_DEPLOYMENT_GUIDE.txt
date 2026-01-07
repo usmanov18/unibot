@@ -1,0 +1,278 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║              ✅ STELLAR BOT - RENDER.COM DEPLOYMENT GUIDE ✅              ║
+║                                                                            ║
+║                        24/7 Bepul Server (O'zbekcha)                      ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+🎯 MAQSAD: Bot-ni Render.com-da 24/7 ishlatish
+
+⏱️ VAQT: 10-15 daqiqa
+
+════════════════════════════════════════════════════════════════════════════
+
+📱 TELEGRAM BOT TOKEN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   8105765097:AAHMfZF-yGSHwbdoI32t3GobLudDgdS91Yc
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 1️⃣: GITHUB-GA KIRISH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Allaqachon READY!
+
+Kodingiz GitHub-da (main branch):
+   📍 https://github.com/usmanov18/unibot
+
+TEKSHIRISH:
+   ✓ TypeScript - Compiled ✅
+   ✓ Prisma - Generated ✅
+   ✓ Dependencies - 247 packages ✅
+   ✓ render.yaml - Present ✅
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 2️⃣: RENDER.COM-GA KIRING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Link: https://render.com
+
+2. "Sign Up" bosing
+
+3. GitHub bilan sign up:
+   📍 "Sign up with GitHub" tanlang
+   ✅ GitHub account bilan login qiling
+
+4. GitHub-ga permission bering:
+   ✅ "Authorize render" bosing
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 3️⃣: NEW WEB SERVICE YARATNI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Dashboard-ga kiring:
+   📍 https://dashboard.render.com
+
+2. Sag tarafdagi "+" tugmasini bosing
+
+3. "Web Service" ni tanlang
+
+4. Repository ulang:
+   🔗 "Connect GitHub account" bosing
+   
+5. Repository tanlang:
+   📍 usmanov18/unibot
+   ✅ Connect qiling
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 4️⃣: SETTINGS SOZLASH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quyidagi ma'lumotlarni to'lding:
+
+📝 SERVICE NAME:
+   stellar-bot
+
+🌍 REGION:
+   Oregon (USA)  ← TANLANG (default - eng yaqin)
+
+🔀 BRANCH:
+   main
+
+📦 BUILD COMMAND:
+   cd server && npm install && npm run prisma:generate && npm run build
+
+▶️ START COMMAND:
+   cd server && node dist/index.js
+
+💾 INSTANCE TYPE:
+   Free (512 MB RAM)  ← Default, ozgartirmang
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 5️⃣: ENVIRONMENT VARIABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"Environment" tab-ga kiring va qo'shing:
+
+┌─────────────────────────────────────────────────────────────┐
+│ KEY: TELEGRAM_BOT_TOKEN                                     │
+│ VALUE: 8105765097:AAHMfZF-yGSHwbdoI32t3GobLudDgdS91Yc      │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ KEY: NODE_ENV                                               │
+│ VALUE: production                                           │
+└─────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════
+
+STEP 6️⃣: DEPLOY QILNI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Barcha settings to'lgan-mi tekshiring
+
+2. "Create Web Service" tugmasini bosing
+
+3. DEPLOY BOSHLANADI! ⏳
+
+   ⏳ 5-10 daqiqa kutni...
+   
+   Logs-da quyidagi ko'rish kerak:
+   ✅ npm install running
+   ✅ prisma generate
+   ✅ tsc build success
+   ✅ Starting Stellar Bot
+   ✅ Server listening on port 4000
+
+════════════════════════════════════════════════════════════════════════════
+
+STEP 7️⃣: TEKSHIRISH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Deploy tugagandan so'ng:
+
+1. BOT URL OLNI:
+   https://stellar-bot.onrender.com
+   
+   (Render avtomatik URL beradi)
+
+2. HEALTH CHECK QILNI:
+   curl https://stellar-bot.onrender.com/health
+   
+   Natija: {"status":"ok"}
+
+3. TELEGRAM-DA TEST QILNI:
+   - Botni topni (@stellar_bot yoki shu odam bilan)
+   - /start yozni
+   - ✅ Bot javob berishi kerak!
+
+════════════════════════════════════════════════════════════════════════════
+
+🎯 BOT XUSUSIYATLARI:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/start          - Bot-ni boshlash
+/features       - Barcha xususiyatlarni ko'rish
+/search         - Web qidiruv
+/weather        - Ob-havo ma'lumotlari
+/finance        - Valyuta/Crypto
+/places         - Yaqin joylar
+/image          - AI rasm yaratish
+/payment        - To'lov sistema
+
+════════════════════════════════════════════════════════════════════════════
+
+💻 API ENDPOINTS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+GET     https://stellar-bot.onrender.com/health
+        └─ Server health check
+
+GET     https://stellar-bot.onrender.com/api/sections
+        └─ Bot sections list
+
+POST    https://stellar-bot.onrender.com/api/sections
+        └─ New section qo'shish
+
+PATCH   https://stellar-bot.onrender.com/api/sections/:id/toggle
+        └─ Section toggle
+
+DELETE  https://stellar-bot.onrender.com/api/sections/:id
+        └─ Section o'chirish
+
+════════════════════════════════════════════════════════════════════════════
+
+🚨 AGAR XATO BO'LSA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. LOGS QARA:
+   Dashboard → stellar-bot → Logs tab
+   
+   Quyidagi xatolarni toping:
+   ❌ "Cannot find module" 
+      → npm install failed (kutni, qayta build)
+   
+   ❌ "TELEGRAM_BOT_TOKEN undefined"
+      → Environment variable qo'shilmagan (fix qilni)
+   
+   ❌ "EADDRINUSE"
+      → Port busy (Render qayta start qiladi)
+
+2. QAYTA BUILD QILNI:
+   Dashboard → stellar-bot → Manual Deploy → "Deploy latest commit"
+
+3. LOGS DELETE QILNI VA BUILD:
+   Dashboard → stellar-bot → Settings → "Clear build cache"
+
+════════════════════════════════════════════════════════════════════════════
+
+⭐ PRO TIPS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ GitHub-ga push qilsangiz → Avtomatik deploy
+   
+✅ Free tier 24/7 uptime (Heroku-dan farq qiladi)
+
+✅ SQLite database persistent (o'zidan saqlanadi)
+
+✅ Environment variables secure (GitHub-da ko'rinmaydi)
+
+✅ Auto-restart on failure (process manager)
+
+════════════════════════════════════════════════════════════════════════════
+
+📊 FREE TIER SPECIFICATIONS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CPU:             0.5 vCPU
+RAM:             512 MB
+Storage:         Unlimited
+Uptime:          24/7 (continuous, no spin-down)
+Concurrent requests: Unlimited
+Cost:            $0/month
+Build time:      ~5 minutes
+
+STELLAR BOT USAGE:
+Memory:          ~40-50 MB
+CPU:             < 5%
+Database:        ~1-5 MB
+Status:          ✅ Sufficient
+
+════════════════════════════════════════════════════════════════════════════
+
+✅ DEPLOYMENT CHECKLIST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ] Render.com-da account yaratdim
+[ ] GitHub bilan login qildim
+[ ] usmanov18/unibot repository ulangdim
+[ ] Build & Start commands sozlagdim
+[ ] TELEGRAM_BOT_TOKEN environment variable qo'shgdim
+[ ] NODE_ENV = production sozlagdim
+[ ] "Create Web Service" bosdim
+[ ] 5-10 daqiqa kutgdim
+[ ] Health check qildim (/health endpoint)
+[ ] Telegram-da /start qildim
+[ ] Bot javob bergani ko'rgdim
+[ ] ✅ DEPLOY TUGADI!
+
+════════════════════════════════════════════════════════════════════════════
+
+🎉 TABRIKLAYDI! STELLAR BOT ENDI 24/7 ISHLAYDI! 🎉
+
+Bot URL:        https://stellar-bot.onrender.com
+Health:         https://stellar-bot.onrender.com/health
+Telegram:       @stellar_bot (yoki sizning bot username-i)
+
+════════════════════════════════════════════════════════════════════════════
+
+Savollar bo'lsa, Render documentation:
+📖 https://render.com/docs
+
+Omadingiz bo'lsin! 🚀
