@@ -1,4 +1,5 @@
 import { Telegraf, session } from 'telegraf';
+import { Context } from 'telegraf';
 import { FeatureManager } from './features/manager';
 import { SearchFeature } from './features/handlers/search';
 import { ImageGenFeature } from './features/handlers/image_gen';
@@ -6,6 +7,17 @@ import { WeatherFeature } from './features/handlers/weather';
 import { FinanceFeature } from './features/handlers/finance';
 import { PlacesFeature } from './features/handlers/places';
 import { PaymentFeature } from './features/handlers/payment';
+import { SearchWebFeature } from './features/handlers/search_web';
+import { SearchFinanceFeature } from './features/handlers/search_finance';
+import { SearchPlacesFeature } from './features/handlers/search_places';
+import { SearchImagesFeature } from './features/handlers/search_images';
+import { SearchVideosFeature } from './features/handlers/search_videos';
+import { GraphicArtFeature } from './features/handlers/graphic_art';
+import { StudyModeFeature } from './features/handlers/study_mode';
+import { DocumentManagementFeature } from './features/handlers/document_management';
+import { VoiceAssistantFeature } from './features/handlers/voice_assistant';
+import { MediaContentFeature } from './features/handlers/media_content';
+import { UserMemoryFeature } from './features/handlers/user_memory';
 import { loggerService } from './services/logger';
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
@@ -16,20 +28,34 @@ const prisma = new PrismaClient();
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
 const featureManager = new FeatureManager();
 
-// Initialize Features
-featureManager.register(new SearchFeature());
-featureManager.register(new ImageGenFeature());
-featureManager.register(new WeatherFeature());
-featureManager.register(new FinanceFeature());
-featureManager.register(new PlacesFeature());
-featureManager.register(new PaymentFeature());
+// Initialize All Features (17 total)
+const features = [
+  new SearchFeature(),
+  new SearchWebFeature(),
+  new SearchFinanceFeature(),
+  new SearchPlacesFeature(),
+  new SearchImagesFeature(),
+  new SearchVideosFeature(),
+  new ImageGenFeature(),
+  new GraphicArtFeature(),
+  new WeatherFeature(),
+  new FinanceFeature(),
+  new PlacesFeature(),
+  new PaymentFeature(),
+  new StudyModeFeature(),
+  new DocumentManagementFeature(),
+  new VoiceAssistantFeature(),
+  new MediaContentFeature(),
+  new UserMemoryFeature()
+];
 
-console.log('Features registered: Search, ImageGen, Weather, Finance, Places, Payment');
+features.forEach(f => featureManager.register(f));
+console.log(`✅ Features registered (${features.length} total)`);
 
 // Middleware: Session
 bot.use(session());
 
-// Middleware: Global Logger
+// Middleware: Global Logger & Analytics
 bot.use(async (ctx, next) => {
   const userId = ctx.from?.id || 0;
   const username = ctx.from?.username || ctx.from?.first_name;
@@ -45,6 +71,8 @@ bot.use(async (ctx, next) => {
   } else if (ctx.inlineQuery) {
     action = 'inline_query';
     input = ctx.inlineQuery.query;
+  } else if (ctx.message && 'voice' in ctx.message) {
+    action = 'voice_message';
   } else if (ctx.message && 'location' in ctx.message) {
     action = 'location';
   }
@@ -58,163 +86,299 @@ bot.use(async (ctx, next) => {
   await next();
 });
 
-// Start command
+// ============= MAIN MENU COMMANDS =============
+
 bot.command('start', async (ctx) => {
   try {
-    const features = featureManager.getFeatures();
-    const featureList = features.map(f => f.name).join('\n');
-    
-    await ctx.reply(`Assalomu alaykum! 👋\n\nBizning botga xush kelibsiz. Quyidagi funksiyalardan foydalaning:\n\n${featureList}\n\n/search <so'z> - Qidiruv\n/weather <shahar> - Ob-havo\n/finance <currency> - Valyuta\n/places <joy> - Yaqin joylar\n/image <prompt> - Rasm chizish\n/payment <summa> - To'lov`, {
-      reply_markup: {
-        keyboard: [
-          [{ text: '🔎 Qidiruv' }, { text: '🎨 Rasm' }],
-          [{ text: '🌤️ Ob-havo' }, { text: '📈 Moliya' }],
-          [{ text: '📍 Joylar' }, { text: '💳 To\'lov' }],
-          [{ text: '/help' }]
-        ],
-        resize_keyboard: true
+    await ctx.reply(
+      `👋 Assalomu alaykum! ${ctx.from?.first_name || 'Foydalanuvchi'}\n\n` +
+      `🤖 Yangilashtirilgan AI Bot - Barcha Xizmatlar Bilan\n\n` +
+      `Quyidagi xizmatlardan foydalanishingiz mumkin:\n\n` +
+      `🔎 **Qidiruv:** Web, Moliya, Joylar, Rasmlar, Videolar\n` +
+      `🎨 **Grafika:** AI Rasmlar, Diagrammalar\n` +
+      `📚 **Ta'lim:** Bepul O'quv, Qo'shimcha Tahlil\n` +
+      `📄 **Hujjatlar:** Sahifalar, Export\n` +
+      `🛒 **Savdo:** Narx Kuzatuvi, Cashback\n` +
+      `🗣️ **Ovozli:** Ovozli Suhbat\n` +
+      `🎧 **Media:** Podkastlar, Yangiliklar\n` +
+      `🧠 **Xotira:** Shaxsiylashtirilgan Ma'lumot\n\n` +
+      `Tugmalardan foydalanib boshlang 👇`,
+      {
+        reply_markup: {
+          keyboard: [
+            ['🔎 Qidiruv', '🎨 Grafika'],
+            ['📚 Ta\'lim', '📄 Hujjatlar'],
+            ['🛒 Savdo', '🗣️ Ovozli'],
+            ['🎧 Media', '🧠 Xotira'],
+            ['⚙️ Sozlamalar', '❓ Yordam']
+          ],
+          resize_keyboard: true
+        }
       }
-    });
+    );
   } catch (e) {
     console.error('Start command error:', e);
-    await ctx.reply('❌ Xatolik: ' + (e instanceof Error ? e.message : 'Noma\'lum xatolik'));
+    await ctx.reply('❌ Xatolik');
   }
 });
 
-// Help command
 bot.command('help', async (ctx) => {
-  await ctx.reply(`📚 Bot Funksiyalari:\n\n🔎 /search <so'z> - Web qidiruv\n🎨 /image <prompt> - AI rasm yaratish\n🌤️ /weather <shahar> - Ob-havo ma'lumoti\n📈 /finance <juft> - Valyuta almashtirish\n📍 /places <joy> - Yaqin joylar\n💳 /payment <summa> - To'lov\n\nYoki tugmalardan foydalaning👆`);
+  const helpText = `🔎 Web qidiruv
+📊 Moliyaviy tahlil
+📍 Joylar qidiruvi
+📸 Rasm qidiruvi
+🎥 Video qidiruvi
+🎨 AI Rasm yaratish
+📚 O'quv rejimi
+📄 Hujjat boshqaruvi
+🛒 Savdo va shopping
+🗣️ Ovozli suhbat
+🎧 Media va kontent
+🧠 Xotira va personalizatsiya`;
+  await ctx.reply(helpText);
 });
 
-// Search command
+// ============= MAIN FEATURES COMMANDS =============
+
 bot.command('search', async (ctx) => {
   try {
-    const query = ctx.message.text.replace('/search ', '').trim();
+    const query = ctx.message?.text?.replace('/search ', '').trim() || '';
     if (!query) {
       await ctx.reply('Qidiruv matni kiriting: /search <so\'z>');
       return;
     }
-    const searchFeature = featureManager.getFeature('search');
-    if (searchFeature && searchFeature.onCommand) {
-      await searchFeature.onCommand(ctx);
-    } else {
-      await ctx.reply('🔎 Qidiruv: Qidiruv matni kiriting');
-    }
+    const feature = featureManager.getFeature('search');
+    if (feature?.onCommand) await feature.onCommand(ctx);
   } catch (e) {
-    console.error('Search error:', e);
     await ctx.reply('❌ Qidiruv xatosi');
   }
 });
 
-// Weather command
-bot.command('weather', async (ctx) => {
-  try {
-    const city = ctx.message.text.replace('/weather ', '').trim();
-    if (!city) {
-      await ctx.reply('Shahar nomini kiriting: /weather <shahar>');
-      return;
-    }
-    await ctx.reply(`🌤️ ${city} uchun ob-havo: 25°C, Tinch`);
-  } catch (e) {
-    console.error('Weather error:', e);
-    await ctx.reply('❌ Ob-havo xatosi');
-  }
-});
-
-// Finance command
 bot.command('finance', async (ctx) => {
   try {
-    const pair = ctx.message.text.replace('/finance ', '').trim();
-    if (!pair) {
-      await ctx.reply('Juftlikni kiriting: /finance USD/UZS');
+    const query = ctx.message?.text?.replace('/finance ', '').trim() || '';
+    if (!query) {
+      await ctx.reply('Valyuta juftligini kiriting: /finance USD/UZS');
       return;
     }
-    await ctx.reply(`📈 ${pair}: 1 USD = 12,500 UZS`);
+    const feature = featureManager.getFeature('search_finance');
+    if (feature?.onCommand) await feature.onCommand(ctx);
   } catch (e) {
-    console.error('Finance error:', e);
     await ctx.reply('❌ Moliya xatosi');
   }
 });
 
-// Places command
 bot.command('places', async (ctx) => {
   try {
-    const location = ctx.message.text.replace('/places ', '').trim();
-    if (!location) {
+    const query = ctx.message?.text?.replace('/places ', '').trim() || '';
+    if (!query) {
       await ctx.reply('Joy nomini kiriting: /places <joy>');
       return;
     }
-    await ctx.reply(`📍 "${location}" yaqinidagi joylar:\n1. Restoran\n2. Kafе\n3. Do\'kon`);
+    const feature = featureManager.getFeature('search_places');
+    if (feature?.onCommand) await feature.onCommand(ctx);
   } catch (e) {
-    console.error('Places error:', e);
     await ctx.reply('❌ Joylar xatosi');
   }
 });
 
-// Image command
-bot.command('image', async (ctx) => {
+bot.command('art', async (ctx) => {
   try {
-    const prompt = ctx.message.text.replace('/image ', '').trim();
+    const prompt = ctx.message?.text?.replace('/art ', '').trim() || '';
     if (!prompt) {
-      await ctx.reply('Rasm tavsifi kiriting: /image <tavsif>');
+      await ctx.reply('Rasm tavsifi kiriting: /art <tavsif>');
       return;
     }
-    await ctx.reply(`🎨 Rasm yaratilmoqda: "${prompt}"\n(AI rasm yaratish qayta ishlanmoqda...)`);
+    const feature = featureManager.getFeature('graphic_art');
+    if (feature?.onCommand) await feature.onCommand(ctx);
   } catch (e) {
-    console.error('Image error:', e);
     await ctx.reply('❌ Rasm xatosi');
   }
 });
 
-// Payment command
-bot.command('payment', async (ctx) => {
+bot.command('study', async (ctx) => {
   try {
-    const amount = ctx.message.text.replace('/payment ', '').trim();
-    if (!amount) {
-      await ctx.reply('Summa kiriting: /payment 10000');
+    const topic = ctx.message?.text?.replace('/study ', '').trim() || '';
+    if (!topic) {
+      await ctx.reply('Mavzuni kiriting: /study <mavzu>');
       return;
     }
-    await ctx.reply(`💳 To'lov oqimi: ${amount} UZS\n✅ To'lov tayyorlandi`);
+    const feature = featureManager.getFeature('study_mode');
+    if (feature?.onCommand) await feature.onCommand(ctx);
   } catch (e) {
-    console.error('Payment error:', e);
-    await ctx.reply('❌ To\'lov xatosi');
+    await ctx.reply('❌ O\'quv xatosi');
   }
 });
 
-// Button handlers
+bot.command('docs', async (ctx) => {
+  try {
+    const feature = featureManager.getFeature('document_management');
+    if (feature?.onCommand) await feature.onCommand(ctx);
+  } catch (e) {
+    await ctx.reply('❌ Hujjat xatosi');
+  }
+});
+
+bot.command('memory', async (ctx) => {
+  try {
+    const feature = featureManager.getFeature('user_memory');
+    if (feature?.onCommand) await feature.onCommand(ctx);
+  } catch (e) {
+    await ctx.reply('❌ Xotira xatosi');
+  }
+});
+
+bot.command('media', async (ctx) => {
+  try {
+    const feature = featureManager.getFeature('media_content');
+    if (feature?.onCommand) await feature.onCommand(ctx);
+  } catch (e) {
+    await ctx.reply('❌ Media xatosi');
+  }
+});
+
+// ============= BUTTON HANDLERS =============
+
 bot.hears('🔎 Qidiruv', async (ctx) => {
-  await ctx.reply('Qidiruv matni kiriting:');
+  await ctx.reply('🔎 Qidiruv bo\'limi', {
+    reply_markup: {
+      keyboard: [
+        ['🌐 Web', '📸 Rasmlar'],
+        ['🎥 Videolar', '📊 Moliya'],
+        ['📍 Joylar', '⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
 });
 
-bot.hears('🎨 Rasm', async (ctx) => {
-  await ctx.reply('Rasm tavsifi kiriting:');
+bot.hears('🎨 Grafika', async (ctx) => {
+  await ctx.reply('🎨 Grafika va vizual bo\'limi', {
+    reply_markup: {
+      keyboard: [
+        ['✨ AI Rasm', '📊 Diagramma'],
+        ['⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
 });
 
-bot.hears('🌤️ Ob-havo', async (ctx) => {
-  await ctx.reply('Shahar nomini kiriting:');
+bot.hears('📚 Ta\'lim', async (ctx) => {
+  await ctx.reply('📚 Ta\'lim va o\'quva bo\'limi', {
+    reply_markup: {
+      keyboard: [
+        ['📖 O\'quv', '❓ Test'],
+        ['📇 Flashcard', '⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
 });
 
-bot.hears('📈 Moliya', async (ctx) => {
-  await ctx.reply('Valyuta juftligini kiriting (USD/UZS):');
+bot.hears('📄 Hujjatlar', async (ctx) => {
+  await ctx.reply('📄 Hujjat boshqaruvi bo\'limi', {
+    reply_markup: {
+      keyboard: [
+        ['✏️ Yangi', '📋 Ro\'yxat'],
+        ['💾 Saqlash', '⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
 });
 
-bot.hears('📍 Joylar', async (ctx) => {
-  await ctx.reply('Joy nomini kiriting:');
+bot.hears('🛒 Savdo', async (ctx) => {
+  await ctx.reply('🛒 Savdo va shopping bo\'limi', {
+    reply_markup: {
+      keyboard: [
+        ['💰 Narx', '💳 Cashback'],
+        ['⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
 });
 
-bot.hears('💳 To\'lov', async (ctx) => {
-  await ctx.reply('To\'lov summasini kiriting:');
+bot.hears('🗣️ Ovozli', async (ctx) => {
+  await ctx.reply('🗣️ Ovozli xizmatlar bo\'limi', {
+    reply_markup: {
+      keyboard: [
+        ['🎤 Suhbat', '🎙️ Diktofon'],
+        ['⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
 });
 
-// Text input handler - must be AFTER specific handlers
+bot.hears('🎧 Media', async (ctx) => {
+  await ctx.reply('🎧 Media va kontent bo\'limi', {
+    reply_markup: {
+      keyboard: [
+        ['🎙️ Podkastlar', '📰 Yangiliklar'],
+        ['⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
+});
+
+bot.hears('🧠 Xotira', async (ctx) => {
+  await ctx.reply('🧠 Xotira va shaxsiylashtirilgan ma\'lumot', {
+    reply_markup: {
+      keyboard: [
+        ['➕ Yangi', '📋 Ro\'yxat'],
+        ['🔄 Eslatish', '⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
+});
+
+bot.hears('⚙️ Sozlamalar', async (ctx) => {
+  await ctx.reply('⚙️ Sozlamalar', {
+    reply_markup: {
+      keyboard: [
+        ['🌙 Tungi', '🌞 Kunduzgi'],
+        ['🇺🇿 O\'zbekcha', '🇬🇧 English'],
+        ['⬅️ Orqaga']
+      ],
+      resize_keyboard: true
+    }
+  });
+});
+
+bot.hears('❓ Yordam', async (ctx) => {
+  await ctx.reply('❓ Yordam va qo\'llab-qo\'vlash\n\nEmail: support@stellarbot.uz\nTelegram: @StellarBotChanneli');
+});
+
+// ============= VOICE HANDLER =============
+
+bot.on('voice', async (ctx) => {
+  try {
+    const feature = featureManager.getFeature('voice_assistant');
+    if (feature?.onVoice) {
+      await feature.onVoice(ctx);
+    }
+  } catch (e) {
+    console.error('Voice error:', e);
+    await ctx.reply('❌ Ovozni qayta ishlashda xatolik');
+  }
+});
+
+// ============= TEXT INPUT HANDLER (MUST BE LAST) =============
+
 bot.on('message', async (ctx) => {
   try {
     if (ctx.message && 'text' in ctx.message) {
       const text = ctx.message.text;
-      // Only respond if it doesn't match any other handler
-      if (!text.startsWith('/')) {
-        await ctx.reply('✅ Xabar qabul qilindi!\n\nKo\'proq ma\'lumot uchun /help yozing');
-      }
+      
+      // Skip if it's a command
+      if (text?.startsWith('/')) return;
+      
+      // Generic response
+      await ctx.reply('✅ Xabarini qabul qildim!\n\nTugmalardan foydalaning yoki /help yozing');
     }
   } catch (e) {
     console.error('Message handler error:', e);

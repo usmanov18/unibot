@@ -3,9 +3,13 @@ import { Context } from 'telegraf';
 export interface IFeature {
   key: string;
   name: string;
+  description?: string;
+  isPaid?: boolean;
   onCommand?(ctx: Context): Promise<void>;
+  onButton?(ctx: Context, data: string): Promise<void>;
   onInput?(ctx: Context, text: string): Promise<void>;
   onCallback?(ctx: Context, data: string): Promise<void>;
+  onVoice?(ctx: Context): Promise<void>;
 }
 
 export interface SessionData {

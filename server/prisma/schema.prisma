@@ -66,3 +66,66 @@ model Payment {
   @@index([userId])
   @@map("payments")
 }
+
+// Feature Usage Tracking
+model FeatureUsage {
+  id        String   @id @default(cuid())
+  userId    BigInt
+  feature   String   // "search_web", "search_finance", "graphic_art", etc
+  input     String?
+  output    String?
+  isPaid    Boolean  @default(false)
+  duration  Int?     // in milliseconds
+  status    String   @default("success") // "success", "error", "pending"
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([feature])
+  @@index([createdAt])
+  @@map("feature_usage")
+}
+
+// Saved Research/Documents
+model SavedDocument {
+  id        String   @id @default(cuid())
+  userId    BigInt
+  title     String
+  content   String
+  docType   String   // "research", "page", "note", "flashcard"
+  tags      String?  // JSON array
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("saved_documents")
+}
+
+// Memory/Facts
+model UserMemory {
+  id        String   @id @default(cuid())
+  userId    BigInt
+  fact      String
+  category  String?
+  importance Int     @default(1) // 1-5
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("user_memory")
+}
+
+// Subscriptions/Offers
+model UserSubscription {
+  id        String   @id @default(cuid())
+  userId    BigInt   @unique
+  plan      String   // "free", "basic", "premium"
+  price     Float    @default(0)
+  renewalDate DateTime?
+  features  String   // JSON array of enabled features
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_subscriptions")
+}
