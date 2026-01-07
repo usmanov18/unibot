@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Bot Sections for Admin Panel
+model BotSection {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  title     String
+  content   String
+  category  String   // Category emoji (🔎 Izlash, 🎨 Grafik, etc)
+  isPaid    Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bot_sections")
+}
+
+// User Logs for Analytics
+model UserLog {
+  id        String   @id @default(cuid())
+  userId    BigInt
+  username  String?
+  action    String   // "message", "callback", "inline_query", "location"
+  input     String?
+  timestamp DateTime @default(now())
+
+  @@index([userId])
+  @@index([timestamp])
+  @@map("user_logs")
+}
+
+// User Sessions/Premium Status
+model UserSession {
+  id        String   @id @default(cuid())
+  userId    BigInt   @unique
+  username  String?
+  isPremium Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_sessions")
+}
+
+// Payment Records
+model Payment {
+  id        String   @id @default(cuid())
+  userId    BigInt
+  amount    Float
+  currency  String   @default("UZS")
+  status    String   // "pending", "completed", "failed"
+  reference String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("payments")
+}
